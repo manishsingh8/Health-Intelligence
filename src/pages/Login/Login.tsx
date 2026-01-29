@@ -11,7 +11,7 @@ const Login = () => {
     <div className="min-h-screen flex items-center justify-center bg-gray-100 px-4">
       <div className="w-full max-w-md bg-white rounded-2xl shadow-lg p-8">
         <div className="flex justify-center mb-6">
-          <img src={RevPlus} alt="Logo" />
+          <img src={RevPlus} alt="Logo" className="h-14 w-200" />
         </div>
 
         <h2 className="text-2xl font-semibold text-center text-gray-800 mb-6">

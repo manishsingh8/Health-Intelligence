@@ -7,6 +7,7 @@ import {
   DialogTitle,
   DialogFooter,
 } from "@/components/ui/dialog";
+import React from "react";
 
 export interface Column<T> {
   key: keyof T;
@@ -30,13 +31,10 @@ type WithMeta = {
   comments?: string | null;
 };
 
-const formatDateDisplay = (value: unknown) => {
-  console.log(value, "vlu");
+const formatDateDisplay = (value: unknown): string => {
   if (typeof value !== "string") return "";
-
   const date = new Date(value);
   if (isNaN(date.getTime())) return value;
-
   const mm = String(date.getMonth() + 1).padStart(2, "0");
   const dd = String(date.getDate()).padStart(2, "0");
   const yyyy = date.getFullYear();
@@ -44,21 +42,20 @@ const formatDateDisplay = (value: unknown) => {
   return `${mm}-${dd}-${yyyy}`;
 };
 
-const formatDateToISO = (value: string) => {
-  console.log(value, "vluiso");
+const formatDateToISO = (value: string): string => {
   const [mm, dd, yyyy] = value.split("-");
   if (!mm || !dd || !yyyy) return value;
   return `${yyyy}-${mm}-${dd}`;
 };
 
-const formatAmountDisplay = (value: unknown) => {
+const formatAmountDisplay = (value: unknown): string => {
   if (typeof value === "number") {
     return `$${value.toLocaleString("en-US")}`;
   }
-  return value ?? "";
+  return value ? String(value) : "";
 };
 
-const parseAmount = (value: string) =>
+const parseAmount = (value: string): number =>
   Number(value.replace(/[^0-9.]/g, "")) || 0;
 
 export function EditModal<
@@ -131,6 +128,14 @@ export function EditModal<
 
                   const isDateField = lowerKey.includes("date");
 
+                  const displayValue: string = (() => {
+                    if (value === null || value === undefined) return "";
+                    if (isAmountField) return formatAmountDisplay(value);
+                    if (isDateField) return formatDateDisplay(value);
+
+                    return String(value);
+                  })();
+
                   return (
                     <div
                       key={String(field)}
@@ -146,7 +151,7 @@ export function EditModal<
                         <>
                           <textarea
                             rows={2}
-                            value={(value as string) ?? ""}
+                            value={String(value ?? "")}
                             disabled={!isEditable}
                             onChange={(e) =>
                               onFieldChange(rowIndex, field, e.target.value)
@@ -165,13 +170,7 @@ export function EditModal<
                         <Input
                           type="text"
                           disabled={!isEditable}
-                          value={
-                            isAmountField
-                              ? formatAmountDisplay(value)
-                              : isDateField
-                                ? formatDateDisplay(value)
-                                : ((value as string) ?? "")
-                          }
+                          value={displayValue}
                           onChange={(e) => {
                             const v = e.target.value;
 
