@@ -350,6 +350,7 @@ export const usePaymentLogic: any = () => {
       type,
       row,
       details: null,
+      error: null,
     });
 
     try {
