@@ -1,25 +1,25 @@
-export const HCD_CARDS = [
+export const HCD_CARD_MAPPER = [
   {
     id: 1,
+    key: "totalDocumentsProcessed",
     headerText: "Total Document Processed",
-    amount: "1432",
   },
   {
     id: 2,
+    key: "autoClassificationAccuracy",
     headerText: "Auto-Classification Accuracy",
-    amount: "43%",
   },
   {
     id: 3,
+    key: "documentsAwaitingReview",
     headerText: "Documents Awaiting Review",
-    amount: "89",
   },
   {
     id: 4,
+    key: "meanProcessingTime",
     headerText: "Mean Processing Time",
-    amount: "3.2 min",
   },
-];
+] as const;
 
 export const AVG_TIME_CHART_DATA = [
   { workflow: "Referrals", time: 25 },
@@ -35,26 +35,21 @@ export const TOP_EXCEPTION_CHART_DATA = [
 ];
 
 export const DAILY_DOCS_CHART_DATA = [
-  { date: "2025-10-01", authForm: 3, eob: 20, letter: 6, medicalRecord: 16 },
-  { date: "2025-10-02", authForm: 5, eob: 6, letter: 3, medicalRecord: 13 },
-  { date: "2025-10-03", authForm: 3, eob: 13, letter: 12, medicalRecord: 15 },
-  { date: "2025-10-04", authForm: 4, eob: 11, letter: 4, medicalRecord: 11 },
-  { date: "2025-10-05", authForm: 5, eob: 16, letter: 10, medicalRecord: 8 },
-  { date: "2025-10-06", authForm: 0, eob: 10, letter: 7, medicalRecord: 6 },
-  { date: "2025-10-07", authForm: 2, eob: 17, letter: 7, medicalRecord: 8 },
-  { date: "2025-10-08", authForm: 4, eob: 13, letter: 6, medicalRecord: 8 },
-  { date: "2025-10-09", authForm: 4, eob: 10, letter: 6, medicalRecord: 10 },
-  { date: "2025-10-10", authForm: 3, eob: 8, letter: 3, medicalRecord: 6 },
-  { date: "2025-10-11", authForm: 5, eob: 14, letter: 8, medicalRecord: 10 },
+  { date: "2025-10-01", authForm: 3, eob: 20 },
+  { date: "2025-10-02", authForm: 5, eob: 6 },
+  { date: "2025-10-03", authForm: 3, eob: 13 },
+  { date: "2025-10-04", authForm: 4, eob: 11 },
+  { date: "2025-10-05", authForm: 5, eob: 16 },
+  { date: "2025-10-06", authForm: 0, eob: 10 },
+  { date: "2025-10-07", authForm: 2, eob: 17 },
 ];
 export const DAILY_DOCS_SEGMENTS_DATA = [
   { dataKey: "authForm", color: "#0047ba", label: "Authorization Form" },
   { dataKey: "eob", color: "#e69f00", label: "EOB" },
   { dataKey: "letter", color: "#009e73", label: "Letter - Appeal" },
-  { dataKey: "medicalRecord", color: "#d55e00", label: "Medical Record" },
 ];
 export const DOCUMENT_STATUS_CHART_DATA = [
-  { label: "Completed", value: 120, color: "#1D4ED8" },
+  { label: "Completed", value: 80, color: "#1D4ED8" },
   { label: "In Progress", value: 45, color: "#F59E0B" },
   { label: "Ready", value: 30, color: "#249563" },
   { label: "Archived", value: 12, color: "#DC2626" },

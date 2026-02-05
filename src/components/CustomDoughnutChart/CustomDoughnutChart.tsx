@@ -47,7 +47,7 @@ Props) => {
                 outerRadius="80%"
                 paddingAngle={2}
               >
-                {data.map((item, index) => (
+                {data?.map((item, index) => (
                   <Cell key={index} fill={item.color} stroke="#fff" />
                 ))}
               </Pie>
@@ -58,7 +58,7 @@ Props) => {
         {/* CUSTOM LEGEND */}
         <div className="absolute right-0 bottom-0 max-w-[150px]">
           <h3 className="font-medium">Status</h3>
-          {data.map((item, i) => (
+          {data?.map((item, i) => (
             <div key={i} className="flex items-start gap-3">
               <span
                 className="h-3 w-3 rounded-sm min-w-[12px]"

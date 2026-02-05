@@ -56,7 +56,6 @@ export const API_ENDPOINTS = {
       CDM SCREENS
   ==============================
   */
-
   CLAIM_FILTERS: `${BASE_URL}/cdm/filters`,
   FILTER_DOCS_LIST: `${BASE_URL}/cdm/fetchFilterDocsList`,
   ASSIGN_USER: `${BASE_URL}/cdm/updateDocsAssignedUserAndTags`,
