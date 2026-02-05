@@ -1,24 +1,36 @@
 interface PaymentCardProps {
   headerText: string;
   amount: string;
-  bgColor?: string; // optional background color
-  border?: boolean; // optional: show border
-  borderColor?: string; // optional border color
+  bgColor?: string;
+  border?: boolean;
+  borderColor?: string;
+  containerWidth?: "small" | "medium" | "large";
 }
+
+const widthMap: Record<
+  NonNullable<PaymentCardProps["containerWidth"]>,
+  string
+> = {
+  small: "200px",
+  medium: "240px",
+  large: "300px",
+};
 
 const PaymentCard = ({
   headerText,
   amount,
   bgColor = "#FFFFFF",
   border = false,
-  borderColor = "#E5E7EB", // default light gray
+  borderColor = "#E5E7EB",
+  containerWidth = "small",
 }: PaymentCardProps) => {
   return (
     <div
-      className="w-50 rounded-xl p-4"
+      className="rounded-xl p-4"
       style={{
         backgroundColor: bgColor,
         border: border ? `1px solid ${borderColor}` : "none",
+        width: widthMap[containerWidth],
       }}
     >
       <div className="text-sm text-[#737373]">{headerText}</div>
