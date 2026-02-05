@@ -129,7 +129,7 @@ export const useHCDLogic = () => {
           "Status overview API failed:",
           statusOverviewResult.reason,
         );
-        setStatusOverview(null);
+        setStatusOverview([]);
       }
       if (documentIntelligenceResult.status === "fulfilled") {
         const intelligenceData =
