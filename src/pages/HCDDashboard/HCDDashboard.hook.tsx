@@ -28,7 +28,7 @@ export const useHCDLogic = () => {
     "Showing records for today.",
   );
   const [customDate, setCustomDate] = useState(false);
-  const [statusOverview, setStatusOverview] = useState([]);
+  const [statusOverview, setStatusOverview] = useState(null);
   const [documentIntelligence, setDocumentIntelligence] =
     useState<DocumentIntelligenceResponse | null>(null);
   const [docChartData, setDocChartData] = useState<any[]>([]);
