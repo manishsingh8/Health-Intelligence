@@ -3,12 +3,12 @@ import { API_ENDPOINTS } from "@/config/api";
 import { HCD_CARD_MAPPER } from "@/constants/ChartsData";
 import { transformBarData } from "@/utils/transformBarChartData";
 
-interface StatusOverviewResponse {
-  totalDocumentsProcessed: number;
-  autoClassificationAccuracy: string;
-  documentsAwaitingReview: number;
-  meanProcessingTime: string;
-}
+// interface StatusOverviewResponse {
+//   totalDocumentsProcessed: number;
+//   autoClassificationAccuracy: string;
+//   documentsAwaitingReview: number;
+//   meanProcessingTime: string;
+// }
 interface HCDBackendResponse {
   totalDocumentsProcessed: number;
   autoClassificationAccuracy: string;
