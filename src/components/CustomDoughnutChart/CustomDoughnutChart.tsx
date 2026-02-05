@@ -9,7 +9,7 @@ export interface DoughnutDataItem {
 interface Props {
   title?: string;
   description?: string;
-  data: DoughnutDataItem[];
+  data: any[];
   icon?: React.ComponentType<{ className?: string }>;
   legendPosition?: "right" | "bottom"; // customizable
 }

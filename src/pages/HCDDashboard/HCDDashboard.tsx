@@ -6,11 +6,11 @@ import { AlertTriangle } from "lucide-react";
 import { CustomDropdown } from "@/components";
 import { FilterSearchBar } from "@/components/FilterSearchBar/FilterSearchBar";
 import {
-  AVG_TIME_CHART_DATA,
-  TOP_EXCEPTION_CHART_DATA,
-  DAILY_DOCS_CHART_DATA,
-  DOCUMENT_STATUS_CHART_DATA,
-  DAILY_DOCS_SEGMENTS_DATA,
+  // AVG_TIME_CHART_DATA,
+  // TOP_EXCEPTION_CHART_DATA,
+  // DAILY_DOCS_CHART_DATA,
+  // DOCUMENT_STATUS_CHART_DATA,
+  // DAILY_DOCS_SEGMENTS_DATA,
   // agentData,
   // processingTimeData,
   // slaComplianceData,
