@@ -10,6 +10,7 @@ interface ValueWithInfoIconOptions {
   tooltipText?: string;
   currency?: string;
   decimals?: number;
+  isAmount?: boolean; // 👈 NEW
 }
 
 const formatAmount = (value: number, currency = "$", decimals = 2) =>
@@ -21,29 +22,36 @@ export const valueWithInfoIcon = (
     tooltipText = "Click to view details",
     currency = "$",
     decimals = 2,
+    isAmount = false,
   }: ValueWithInfoIconOptions = {},
 ) => {
-  if (typeof value !== "number") return "-";
+  if (value === null || value === undefined) return "-";
 
-  const formattedValue = formatAmount(value, currency, decimals);
+  const displayValue =
+    isAmount && typeof value === "number"
+      ? formatAmount(value, currency, decimals)
+      : String(value);
 
   return (
     <span className="inline-flex items-center gap-1">
-      <span>{formattedValue}</span>
+      <span>{displayValue}</span>
 
       <TooltipProvider>
         <Tooltip>
           <TooltipTrigger asChild>
             <Info
               size={14}
-              className="text-muted-foreground hover:text-foreground cursor-pointer "
+              className="text-muted-foreground hover:text-foreground cursor-pointer"
             />
           </TooltipTrigger>
 
           <TooltipContent
-            className="text-xs whitespace-pre-wrap 
-                 bg-gray-200 text-black 
-                 border border-gray-300 shadow-md  max-w-[360px]"
+            className="
+              text-xs whitespace-pre-wrap 
+              bg-gray-200 text-black 
+              border border-gray-300 shadow-md 
+              max-w-[360px]
+            "
           >
             {tooltipText}
           </TooltipContent>

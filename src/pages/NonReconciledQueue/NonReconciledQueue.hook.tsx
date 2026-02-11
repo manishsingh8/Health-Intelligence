@@ -12,6 +12,11 @@ import { showToast } from "@/lib/toast";
 import { formatDate } from "@/utils/formate";
 import { truncateWithTooltip } from "@/utils/truncatedTooltipRenderer";
 import { valueWithInfoIcon } from "@/utils/valueWithInfoIcon";
+import {
+  BANK_DEPOSIT_COLUMNS,
+  REMITTANCE_COLUMNS,
+  EMR_DETAILS_COLUMNS,
+} from "@/constants/TableData";
 
 type VarianceWidgetResponse = {
   data?: {
@@ -61,6 +66,8 @@ export const usePaymentLogic: any = () => {
   }>({ type: null, row: null, details: null });
   const [loadingData, setLoadingData] = useState(false);
   const [isUpdating, setIsUpdating] = useState(false);
+  const [dataModalColumns, setDataModalColumns] =
+    useState(BANK_DEPOSIT_COLUMNS);
 
   const fetchPayers = async () => {
     if (!validateDateRange({ from, to })) return;
@@ -345,6 +352,13 @@ export const usePaymentLogic: any = () => {
     const transactionNo = row?.transactionNo;
     setOpen(true);
     setLoadingData(true);
+    if (type === "Remmitance") {
+      setDataModalColumns(REMITTANCE_COLUMNS);
+    } else if (type === "Bank Deposit") {
+      setDataModalColumns(BANK_DEPOSIT_COLUMNS);
+    } else if (type === "Emr Amount") {
+      setDataModalColumns(EMR_DETAILS_COLUMNS);
+    }
     setModalData({
       type,
       row,
@@ -487,6 +501,7 @@ export const usePaymentLogic: any = () => {
     "remittance",
     "emrAmount",
     "payVariance",
+    "postVariance",
     "glAmount",
   ];
 
@@ -560,5 +575,6 @@ export const usePaymentLogic: any = () => {
     modalData,
     loadingData,
     edit_columns,
+    dataModalColumns,
   };
 };

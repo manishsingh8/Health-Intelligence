@@ -86,7 +86,6 @@ export const useEOBLogic = () => {
   };
   const handleStartPipeline = async () => {
     if (!file) return;
-
     setIsLoading(true);
     setShowAccordion(true);
     setPipelineResult(null);

@@ -5,17 +5,17 @@ import { AlertTriangle } from "lucide-react";
 // import CustomAreaChart from "@/components/CustomAreaChart/CustomAreaChart";
 import { CustomDropdown } from "@/components";
 import { FilterSearchBar } from "@/components/FilterSearchBar/FilterSearchBar";
-import {
-  // AVG_TIME_CHART_DATA,
-  // TOP_EXCEPTION_CHART_DATA,
-  // DAILY_DOCS_CHART_DATA,
-  // DOCUMENT_STATUS_CHART_DATA,
-  // DAILY_DOCS_SEGMENTS_DATA,
-  // agentData,
-  // processingTimeData,
-  // slaComplianceData,
-  // slaSegments,
-} from "@/constants/ChartsData";
+// import {
+// AVG_TIME_CHART_DATA,
+// TOP_EXCEPTION_CHART_DATA,
+// DAILY_DOCS_CHART_DATA,
+// DOCUMENT_STATUS_CHART_DATA,
+// DAILY_DOCS_SEGMENTS_DATA,
+// agentData,
+// processingTimeData,
+// slaComplianceData,
+// slaSegments,
+// } from "@/constants/ChartsData";
 import { useHCDLogic } from "./HCDDashboard.hook";
 import Logo from "@/assets/icons/rp-logo-icon.svg";
 

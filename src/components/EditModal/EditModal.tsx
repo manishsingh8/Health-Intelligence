@@ -33,8 +33,10 @@ type WithMeta = {
 
 const formatDateDisplay = (value: unknown): string => {
   if (typeof value !== "string") return "";
+
   const date = new Date(value);
   if (isNaN(date.getTime())) return value;
+
   const mm = String(date.getMonth() + 1).padStart(2, "0");
   const dd = String(date.getDate()).padStart(2, "0");
   const yyyy = date.getFullYear();
@@ -130,6 +132,7 @@ export function EditModal<
 
                   const displayValue: string = (() => {
                     if (value === null || value === undefined) return "";
+
                     if (isAmountField) return formatAmountDisplay(value);
                     if (isDateField) return formatDateDisplay(value);
 

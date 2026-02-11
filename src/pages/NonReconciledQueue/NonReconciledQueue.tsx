@@ -5,8 +5,7 @@ import { DataTable } from "@/components/DataTable/DataTable";
 import { EditModal } from "@/components/EditModal/EditModal";
 import { EDITABLE_FIELDS } from "@/constants/TableData";
 import Logo from "@/assets/icons/rp-logo-icon.svg";
-import DataModal from "./DataModal";
-import { BANK_DEPOSIT_COLUMNS } from "@/constants/TableData";
+import DataModal from "../../components/DataModal/DataModal";
 
 interface Task {
   id: string;
@@ -97,6 +96,7 @@ const Payment = () => {
     modalData,
     loadingData,
     edit_columns,
+    dataModalColumns,
   } = usePaymentLogic();
 
   return (
@@ -222,7 +222,7 @@ const Payment = () => {
         open={open}
         setOpen={setOpen}
         modalData={modalData}
-        columns={BANK_DEPOSIT_COLUMNS}
+        columns={dataModalColumns}
         loading={loadingData}
       />
     </div>

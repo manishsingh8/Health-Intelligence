@@ -18,6 +18,7 @@ export interface Transaction {
   comments: string;
   history: string;
   userId: string;
+  postVariance?: number | string;
 }
 export interface ReconciledTransaction {
   id: string;
@@ -44,6 +45,30 @@ export const BANK_DEPOSIT_COLUMNS = [
   { key: "fileReceivedDate", label: "File Received Date" },
   { key: "fileName", label: "File Name" },
   { key: "description", label: "Description" },
+];
+
+export const EMR_DETAILS_COLUMNS = [
+  { key: "eftNo", label: "ETF Number" },
+  { key: "payerName", label: "Payer Name" },
+  { key: "officeKey", label: "Office Key" },
+  { key: "visitId", label: "Visit Id" },
+  { key: "paymentMethod", label: "Payment Method" },
+  { key: "paymentType", label: "Payment Type" },
+  { key: "paidAmount", label: "Paid Amount" },
+  { key: "batchId", label: "Batch Id" },
+  { key: "batchOwner", label: "Batch Owner" },
+  { key: "depositDate", label: "Deposit Date" },
+  { key: "entryDate", label: "Entry Date" },
+  { key: "fileReceivedDate", label: "File Received Date" },
+  { key: "fileName", label: "File Name" },
+];
+
+export const REMITTANCE_COLUMNS = [
+  { key: "payerName", label: "Payer Name" },
+  { key: "transactionNo", label: "Transaction Number" },
+  { key: "amount", label: "Amount" },
+  { key: "receivedDate", label: "Received Date" },
+  { key: "fileName", label: "File Name" },
 ];
 
 export const EDITABLE_FIELDS: (keyof Transaction)[] = [

@@ -5,6 +5,7 @@ import { format, subDays } from "date-fns";
 import { setPayload, setLetterListTableData } from "@/redux/slices/cdmSlice";
 import type { RootState } from "@/redux/store";
 import { COOKED_CDM_DATA } from "@/constants/CDMData";
+import { API_ENDPOINTS } from "@/config/api";
 
 export interface CDMDocument {
   id: string;
@@ -21,7 +22,9 @@ export interface CDMDocument {
 export const useCDMDashboard = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { payloadData, letterListTableData } = useSelector((state: RootState) => state.cdm);
+  const { payloadData, letterListTableData } = useSelector(
+    (state: RootState) => state.cdm,
+  );
 
   const [bulkAssignDialogOpen, setBulkAssignDialogOpen] = useState(false);
   const [rowSelection, setRowSelection] = useState<Record<string, boolean>>({});
@@ -30,7 +33,7 @@ export const useCDMDashboard = () => {
   const fetchData = async (payload: any) => {
     console.log("Simulating fetch with payload:", payload);
     // Simple simulation delay
-    await new Promise(resolve => setTimeout(resolve, 800));
+    await new Promise((resolve) => setTimeout(resolve, 800));
   };
 
   useEffect(() => {
@@ -45,10 +48,10 @@ export const useCDMDashboard = () => {
       };
       dispatch(setPayload(initialPayload));
     }
-    
+
     // Inject cooked data for demonstration
     dispatch(setLetterListTableData(COOKED_CDM_DATA as CDMDocument[]));
-    
+
     // Original fetch logic commented out for "cooked data" usage
     // fetchData(initialPayload);
   }, []);
@@ -68,12 +71,32 @@ export const useCDMDashboard = () => {
       setRowSelection({});
     } else {
       const allSelected: Record<string, boolean> = {};
-      letterListTableData.forEach(row => {
+      letterListTableData.forEach((row) => {
         allSelected[String(row.id)] = true;
       });
       setRowSelection(allSelected);
     }
   };
+
+  const fetchCDMFilters = async () => {
+    try {
+      const res = await fetch(API_ENDPOINTS.CLAIM_FILTERS, {
+        method: "GET",
+      });
+      if (!res.ok) {
+        throw new Error("Failed to fetch CDM filters");
+      }
+      const data = await res.json();
+      console.log("CDM Filters:", data);
+      // Optional: dispatch to redux if needed
+      // dispatch(setCDMFilters(data));
+    } catch (error) {
+      console.error("Error fetching CDM filters:", error);
+    }
+  };
+  useEffect(() => {
+    fetchCDMFilters();
+  }, []);
 
   return {
     dispatch,
