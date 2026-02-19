@@ -425,13 +425,18 @@ export function DataTable<T extends object = Record<string, unknown>>({
                     {/* UPDATED RENDER HERE */}
                     {columns.map((col) => {
                       const cellValue = row[col.key];
+                      const clickableClassName = col.clickable
+                        ? `cursor-pointer hover:underline ${
+                            col.bodyClassName ? "" : "text-green-600"
+                          }`
+                        : "";
 
                       return (
                         <TableCell
                           key={String(col.key)}
                           className={`text-xs text-center align-middle
                             ${col.bodyClassName || ""}
-                            ${col.clickable ? "cursor-pointer text-green-600 hover:underline" : ""}
+                            ${clickableClassName}
                             ${col.conditionalClassName ? col.conditionalClassName(cellValue, row) : ""}
                           `}
                           onClick={() => {

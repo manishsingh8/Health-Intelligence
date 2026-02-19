@@ -162,7 +162,7 @@ export const NON_RECONCILED_COLUMN_LABELS: Partial<
   bankDeposit: "BAI Amount",
   remittance: "Remittance Amount",
   emrAmount: "EMR Amount",
-  payVariance: "Variance Amount",
+  payVariance: "Pay Variance",
   statusName: "Current Status",
   glAmount: "Others",
 };

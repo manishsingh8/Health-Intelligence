@@ -1,3 +1,5 @@
+import { type Transaction } from "@/constants/TableData";
+
 export const RCM_CENTRAL_ENGINE_DATA = [
   {
     headerText: "Total Files Ingested",
@@ -164,4 +166,22 @@ export const DROPDOWN_OPTIONS = [
   { value: "today", label: "Today" },
   { value: "1week", label: "1 Week" },
   { value: "lastMonth", label: "Last Month" },
+];
+
+export const baseExcludeKeys: (keyof Transaction)[] = [
+  "id",
+  "nonReconciledDataId",
+  "statusId",
+  "region",
+  "history",
+  "userId",
+];
+
+export const amountFields: (keyof Transaction)[] = [
+  "bankDeposit",
+  "remittance",
+  "emrAmount",
+  "payVariance",
+  "postVariance",
+  "glAmount",
 ];

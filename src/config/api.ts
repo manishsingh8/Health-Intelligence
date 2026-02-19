@@ -27,16 +27,18 @@ export const API_ENDPOINTS = {
   ========================== */
   VARIANCE_WIDGET: `${BASE_URL}/varianceQueue/varianceWidget`,
   VARIANCE_TABLE: `${BASE_URL}/varianceQueue/getVarianceQueueData`,
-  UPDATE_VARIANCE_TABLE:`${BASE_URL}/varianceQueue/manual-update`,
+  UPDATE_VARIANCE_TABLE: `${BASE_URL}/varianceQueue/manual-update`,
   BAI_DATA: `${BASE_URL}/varianceQueue/getBaiData`,
   REMIT_DATA: `${BASE_URL}/varianceQueue/getRemitData`,
   EMR_DATA: `${BASE_URL}/varianceQueue/getCashPostingData`,
+  DOWNLOAD_REMIT_FILE: `${BASE_URL}/varianceQueue/downloadRemitFile`,
 
   /* =========================
      CASH POSTING
   ========================== */
   CASH_POSTING_QUEUE: `${BASE_URL}/cashPosting/getCashPostingQueue`,
   CASH_POSTING_REPORT: `${BASE_URL}/cashPosting/getCashPostingReport`,
+  CASH_POSTING_CHECK_DETAILS: `${BASE_URL}/cashPosting/getCheckDetailsByCheckNum`,
 
   /* ==========================
       DASHBOARD DATA

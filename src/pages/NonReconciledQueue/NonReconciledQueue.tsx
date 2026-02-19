@@ -6,52 +6,17 @@ import { EditModal } from "@/components/EditModal/EditModal";
 import { EDITABLE_FIELDS } from "@/constants/TableData";
 import Logo from "@/assets/icons/rp-logo-icon.svg";
 import DataModal from "../../components/DataModal/DataModal";
-
-interface Task {
-  id: string;
-  title: string;
-  status: string;
-  priority: string;
-  assignee: string;
-}
-
-const mockTasks: Task[] = [
-  {
-    id: "1",
-    title: "Design homepage mockup",
-    status: "In Progress",
-    priority: "High",
-    assignee: "John Doe",
-  },
-  {
-    id: "2",
-    title: "Implement authentication",
-    status: "To Do",
-    priority: "High",
-    assignee: "Jane Smith",
-  },
-  {
-    id: "3",
-    title: "Write API documentation",
-    status: "In Progress",
-    priority: "Medium",
-    assignee: "Bob Johnson",
-  },
-  {
-    id: "4",
-    title: "Fix mobile responsiveness",
-    status: "Done",
-    priority: "Low",
-    assignee: "Alice Brown",
-  },
-  {
-    id: "5",
-    title: "Add dark mode support",
-    status: "To Do",
-    priority: "Medium",
-    assignee: "Charlie Wilson",
-  },
-];
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import {
+  getEmrSummaryColumns,
+  emrFileDetailsColumns,
+} from "./nonReconciledColumnRules";
+import { mockTasks } from "@/constants/NonReconciledQueue";
 
 const Payment = () => {
   const {
@@ -97,7 +62,19 @@ const Payment = () => {
     loadingData,
     edit_columns,
     dataModalColumns,
+    emrTableOpen,
+    setEmrTableOpen,
+    emrFileDetailsOpen,
+    setEmrFileDetailsOpen,
+    emrTableData,
+    openEmrFileDetails,
+    selectedEmrFileName,
+    selectedEmrFileRows,
   } = usePaymentLogic();
+
+  const emrSummaryColumns = getEmrSummaryColumns({
+    openEmrFileDetails,
+  });
 
   return (
     <div className="p-4 flex flex-col h-[calc(100vh-64px)] gap-4">
@@ -225,6 +202,51 @@ const Payment = () => {
         columns={dataModalColumns}
         loading={loadingData}
       />
+
+      <Dialog open={emrTableOpen} onOpenChange={setEmrTableOpen}>
+        <DialogContent className="w-full max-w-[85vw] max-h-[90vh] flex flex-col">
+          <DialogHeader>
+            <DialogTitle className="text-md">EMR Amount Details</DialogTitle>
+          </DialogHeader>
+
+          <div className="flex-1 overflow-auto">
+            {loadingData ? (
+              <div className="flex items-center justify-center w-full border border-[#E6ECF0] p-4 pt-2.5 rounded-[14px] h-20">
+                <span className="flex items-center gap-2 text-gray-500">
+                  Loading...
+                  <img src={Logo} className="w-5 h-6 animate-spin" alt="logo" />
+                </span>
+              </div>
+            ) : (
+              <DataTable
+                data={emrTableData}
+                columns={emrSummaryColumns}
+                idKey="__rowId"
+              />
+            )}
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={emrFileDetailsOpen} onOpenChange={setEmrFileDetailsOpen}>
+        <DialogContent className="w-full max-w-[85vw] max-h-[90vh] flex flex-col">
+          <DialogHeader>
+            <DialogTitle className="text-md">
+              {selectedEmrFileName
+                ? `${selectedEmrFileName} Details`
+                : "File Details"}
+            </DialogTitle>
+          </DialogHeader>
+
+          <div className="flex-1 overflow-auto">
+            <DataTable
+              data={selectedEmrFileRows}
+              columns={emrFileDetailsColumns}
+              idKey="__rowId"
+            />
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

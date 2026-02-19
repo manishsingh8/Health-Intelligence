@@ -3,13 +3,11 @@ import { AreaChart } from "lucide-react";
 import useRCMDashboard from "./RCMDashboard.hook";
 //import OperationalView from "@/components/OperationalView/OperationalView";
 import Loader from "@/components/Loader/Loader";
-import CustomBarChart from "@/components/CustomBarChart/CustomBarChart";
+// import CustomBarChart from "@/components/CustomBarChart/CustomBarChart";
 import { FilterSearchBar } from "@/components/FilterSearchBar/FilterSearchBar";
 import { CustomDropdown } from "@/components";
 import { Toaster } from "@/components/Toaster/Toaster";
 import RCMchart from "@/pages/RCMDashboard/RCMchart";
-
-
 
 export type DateFilterValue = "today" | "lastMonth" | "custom";
 const DATE_OPTIONS = [
@@ -29,8 +27,8 @@ const RCMDashboard = () => {
     handleDateOptionChange,
     dateFilter,
     dateFilterText,
-    workQueueData,
-   // operationalViewData,
+    // workQueueData,
+    // operationalViewData,
   } = useRCMDashboard();
   return (
     <div className="p-4 flex flex-col h-[calc(100vh-64px)] overflow-auto gap-4">
@@ -85,10 +83,10 @@ const RCMDashboard = () => {
           </div>
         </div>
       </div>
-    {/* {loading ? <Loader /> : <OperationalView data={operationalViewData} />} */}
-    <RCMchart />
-       
-      <div className="grid grid-cols-1 gap-4">
+      {/* {loading ? <Loader /> : <OperationalView data={operationalViewData} />} */}
+      <RCMchart />
+
+      {/* <div className="grid grid-cols-1 gap-4">
         {loading ? (
           <Loader />
         ) : (
@@ -101,8 +99,8 @@ const RCMDashboard = () => {
             barSize={30}
           />
         )}
-        {/* <WorkQueueVolumeChart /> */}
-      </div>
+        <WorkQueueVolumeChart />
+      </div> */}
       <Toaster />
     </div>
   );

@@ -3,15 +3,15 @@ import { buildKpiCards } from "@/constants/RCMDashboardData";
 import { API_ENDPOINTS } from "@/config/api";
 import { postRequest } from "@/utils/postRequest";
 import { type BackendKpi } from "@/constants/RCMDashboardData";
-import { type BarSegmentConfig } from "@/components/CustomBarChart/CustomBarChart";
-import { showToast } from "@/lib/toast";
+// import { type BarSegmentConfig } from "@/components/CustomBarChart/CustomBarChart";
+// import { showToast } from "@/lib/toast";
 import { validateDateRange } from "@/utils/dateRangeValidator";
-interface WorkQueueBarChartData {
-  title?: string;
-  description?: string;
-  data: any;
-  segments?: BarSegmentConfig[];
-}
+// interface WorkQueueBarChartData {
+//   title?: string;
+//   description?: string;
+//   data: any;
+//   segments?: BarSegmentConfig[];
+// }
 
 export default function useRCMDashboard() {
   const [operationalMetrics, setOperationalMetrics] = useState<BackendKpi[]>(
@@ -30,11 +30,11 @@ export default function useRCMDashboard() {
   const [dateFilterText, setDateFilterText] = useState(
     "Showing records for today.",
   );
-  const [workQueueData, setWorkQueueData] =
-    useState<WorkQueueBarChartData | null>(null);
-  const [operationalViewData, setOperationalViewData] = useState<any | null>(
-    null,
-  );
+  // const [workQueueData, setWorkQueueData] =
+  //   useState<WorkQueueBarChartData | null>(null);
+  // const [operationalViewData, setOperationalViewData] = useState<any | null>(
+  //   null,
+  // );
 
   const kpiCards = useMemo(() => {
     return buildKpiCards(operationalMetrics);
@@ -64,7 +64,6 @@ export default function useRCMDashboard() {
     }
   }, []);
 
-  // ✅ Update text when custom dates change
   useEffect(() => {
     if (dateFilter === "custom" && from && to) {
       setDateFilterText(`Showing records from ${from} to ${to}.`);
@@ -81,43 +80,42 @@ export default function useRCMDashboard() {
 
     try {
       setLoading(true);
-      const [revenueRes, workQueueRes, operationalRes] =
-        await Promise.allSettled([
-          postRequest(API_ENDPOINTS.REVENUE_WIDGETS, payload),
-          postRequest(API_ENDPOINTS.WORK_QUEUE_ACTIVITY, payload),
-          postRequest(API_ENDPOINTS.OPERATIONAL_PERFORMANCE_VIEW, payload),
-        ]);
+      const [revenueRes] = await Promise.allSettled([
+        postRequest(API_ENDPOINTS.REVENUE_WIDGETS, payload),
+        // postRequest(API_ENDPOINTS.WORK_QUEUE_ACTIVITY, payload),
+        // postRequest(API_ENDPOINTS.OPERATIONAL_PERFORMANCE_VIEW, payload),
+      ]);
 
       if (revenueRes.status === "fulfilled") {
         setOperationalMetrics(revenueRes.value.data);
       }
 
-      if (workQueueRes.status === "fulfilled") {
-        const data = workQueueRes.value?.data;
+      // if (workQueueRes.status === "fulfilled") {
+      //   const data = workQueueRes.value?.data;
 
-        if (!data || data.length === 0) {
-          setWorkQueueData(null);
-          showToast({
-            message: "No work queue activity found",
-            severity: "info",
-            id: "workqueue-empty",
-          });
-        } else {
-          setWorkQueueData(data);
-        }
-      } else {
-        setWorkQueueData(null);
+      //   if (!data || data.length === 0) {
+      //     setWorkQueueData(null);
+      //     showToast({
+      //       message: "No work queue activity found",
+      //       severity: "info",
+      //       id: "workqueue-empty",
+      //     });
+      //   } else {
+      //     setWorkQueueData(data);
+      //   }
+      // } else {
+      //   setWorkQueueData(null);
 
-        showToast({
-          message: "Failed to fetch work queue activity",
-          severity: "error",
-          id: "workqueue-error",
-        });
-      }
+      //   showToast({
+      //     message: "Failed to fetch work queue activity",
+      //     severity: "error",
+      //     id: "workqueue-error",
+      //   });
+      // }
 
-      if (operationalRes.status === "fulfilled") {
-        setOperationalViewData(operationalRes.value);
-      }
+      // if (operationalRes.status === "fulfilled") {
+      //   setOperationalViewData(operationalRes.value);
+      // }
     } catch (error) {
       console.error("Widget fetch error", error);
     } finally {
@@ -142,7 +140,7 @@ export default function useRCMDashboard() {
     dateFilter,
     customDate,
     dateFilterText,
-    workQueueData,
-    operationalViewData,
+    // workQueueData,
+    // operationalViewData,
   };
 }

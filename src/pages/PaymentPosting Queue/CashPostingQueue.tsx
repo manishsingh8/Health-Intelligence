@@ -2,7 +2,7 @@ import { FilterSearchBar } from "@/components/FilterSearchBar/FilterSearchBar";
 import { DataTable } from "@/components/DataTable/DataTable";
 import { useCashPostingQueueLogic } from "./CashPostingQueue.hook";
 import Logo from "@/assets/icons/rp-logo-icon.svg";
-import DataModal from "@/components/DataModal/DataModal";
+import CheckDetailsModal from "./CheckDetailsModal";
 
 const CashPostingQueue = () => {
   const {
@@ -99,13 +99,11 @@ const CashPostingQueue = () => {
           />
         </div>
       )}
-      <DataModal
+      <CheckDetailsModal
         open={open}
         setOpen={setOpen}
         modalData={modalData}
-        columns={columns}
         loading={loadingData}
-        link=""
       />
     </div>
   );

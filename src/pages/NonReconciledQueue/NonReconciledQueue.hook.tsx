@@ -3,20 +3,20 @@ import { type Transaction } from "@/constants/TableData";
 import { mapPaymentCardsWithBg } from "@/utils/mapObjectToPaymentCard";
 import { API_ENDPOINTS } from "@/config/api";
 import { buildColumns } from "@/utils/buildColumns";
+import type { Column } from "@/components/DataTable/DataTable";
 import {
   NON_RECONCILED_COLUMN_LABELS,
   NON_RECONCILED_HEADER_TEXT,
 } from "@/constants/TableData";
 import { validateDateRange } from "@/utils/dateRangeValidator";
 import { showToast } from "@/lib/toast";
-import { formatDate } from "@/utils/formate";
-import { truncateWithTooltip } from "@/utils/truncatedTooltipRenderer";
-import { valueWithInfoIcon } from "@/utils/valueWithInfoIcon";
 import {
   BANK_DEPOSIT_COLUMNS,
   REMITTANCE_COLUMNS,
   EMR_DETAILS_COLUMNS,
 } from "@/constants/TableData";
+import { baseExcludeKeys, amountFields } from "@/constants/DashboardData";
+import { getNonReconciledColumnRules } from "@/pages/NonReconciledQueue/nonReconciledColumnRules";
 
 type VarianceWidgetResponse = {
   data?: {
@@ -29,19 +29,109 @@ type VarianceWidgetResponse = {
   exceptionCount?: number;
 };
 
-export const usePaymentLogic: any = () => {
+export type EmrAmountRow = {
+  __rowId?: string;
+  eftNo?: string | null;
+  payerName?: string | null;
+  officeKey?: string | null;
+  visitId?: string | null;
+  paymentMethod?: string | null;
+  paymentType?: string | null;
+  paidAmount?: string | number | null;
+  batchId?: string | number | null;
+  batchOwner?: string | null;
+  depositDate?: string | null;
+  entryDate?: string | null;
+  fileId?: string | number | null;
+  fileName?: string | null;
+  fileReceivedDate?: string | null;
+};
+
+type SelectOption = {
+  value: string;
+  label: string;
+};
+
+type DataModalState = {
+  type: string | null;
+  row: Transaction | null;
+  details: unknown;
+};
+
+type UsePaymentLogicReturn = {
+  toggle: string;
+  from: string;
+  to: string;
+  payerOptions: SelectOption[];
+  statusOptions: SelectOption[];
+  selectedPayer: string;
+  selectedStatus: string;
+  setSelectedPayer: React.Dispatch<React.SetStateAction<string>>;
+  setSelectedStatus: React.Dispatch<React.SetStateAction<string>>;
+  setToggle: React.Dispatch<React.SetStateAction<string>>;
+  setFrom: React.Dispatch<React.SetStateAction<string>>;
+  setTo: React.Dispatch<React.SetStateAction<string>>;
+  columns: Column<Transaction>[];
+  edit_columns: Column<Transaction>[];
+  columnRules: Record<string, unknown>;
+  handleEditCancel: () => void;
+  handleEditSubmit: () => void;
+  handleFieldChange: (
+    rowIndex: number,
+    field: keyof Transaction,
+    value: unknown,
+  ) => void;
+  handleExport: () => void;
+  handleBrandToggle: (region: string) => void;
+  handleSelectAll: () => void;
+  handleRowSelect: (id: string) => void;
+  isEditModalOpen: boolean;
+  setIsEditModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  searchTerm: string;
+  setSearchTerm: React.Dispatch<React.SetStateAction<string>>;
+  selectedBrands: string[];
+  setRowsPerPage: React.Dispatch<React.SetStateAction<number>>;
+  paginatedData: Transaction[];
+  totalPages: number;
+  selectedRows: Set<string>;
+  setSelectedRows: React.Dispatch<React.SetStateAction<Set<string>>>;
+  currentPage: number;
+  setCurrentPage: React.Dispatch<React.SetStateAction<number>>;
+  rowsPerPage: number;
+  editedData: Partial<Transaction>[];
+  paymentCardsData: unknown[];
+  tableLoading: boolean;
+  widgetLoading: boolean;
+  handleEditClick: () => void;
+  comment: string;
+  setComment: React.Dispatch<React.SetStateAction<string>>;
+  open: boolean;
+  setOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  modalData: DataModalState;
+  loadingData: boolean;
+  dataModalColumns: unknown;
+  emrTableOpen: boolean;
+  setEmrTableOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  emrFileDetailsOpen: boolean;
+  setEmrFileDetailsOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  emrTableData: EmrAmountRow[];
+  openEmrFileDetails: (fileName: string) => void;
+  selectedEmrFileName: string | null;
+  selectedEmrFileRows: EmrAmountRow[];
+};
+
+export const usePaymentLogic = (): UsePaymentLogicReturn => {
   const [toggle, setToggle] = useState("dateRange");
   const [from, setFrom] = useState("2025-01-01");
   const [to, setTo] = useState(() => {
     return new Date().toISOString().split("T")[0];
   });
-
   const [selectedPayer, setSelectedPayer] = useState("all");
   const [selectedStatus, setSelectedStatus] = useState("all");
-  const [payerOptions, setPayerOptions] = useState([
+  const [payerOptions, setPayerOptions] = useState<SelectOption[]>([
     { value: "all", label: "All Payers" },
   ]);
-  const [statusOptions, setStatusOptions] = useState([
+  const [statusOptions, setStatusOptions] = useState<SelectOption[]>([
     { value: "all", label: "All Status" },
   ]);
   const [selectedRows, setSelectedRows] = useState<Set<string>>(new Set());
@@ -59,61 +149,77 @@ export const usePaymentLogic: any = () => {
   const [tableData, setTableData] = useState<Transaction[]>([]);
   const [comment, setComment] = useState("");
   const [open, setOpen] = useState(false);
-  const [modalData, setModalData] = useState<{
-    type: any;
-    row: any;
-    details: any;
-  }>({ type: null, row: null, details: null });
+  const [emrTableOpen, setEmrTableOpen] = useState(false);
+  const [emrFileDetailsOpen, setEmrFileDetailsOpen] = useState(false);
+  const [emrTableData, setEmrTableData] = useState<EmrAmountRow[]>([]);
+  const [selectedEmrFileName, setSelectedEmrFileName] = useState<string | null>(
+    null,
+  );
+  const [modalData, setModalData] = useState<DataModalState>({
+    type: null,
+    row: null,
+    details: null,
+  });
   const [loadingData, setLoadingData] = useState(false);
   const [isUpdating, setIsUpdating] = useState(false);
   const [dataModalColumns, setDataModalColumns] =
     useState(BANK_DEPOSIT_COLUMNS);
 
-  const fetchPayers = async () => {
+  const openEmrFileDetails = (fileName: string) => {
+    setSelectedEmrFileName(fileName);
+    setEmrFileDetailsOpen(true);
+  };
+
+  const fetchSelectOptions = async <TItem,>(params: {
+    url: string;
+    allOptionLabel: string;
+    errorMessage: string;
+    mapItem: (item: TItem) => { value: string; label: string };
+    setOptions: React.Dispatch<
+      React.SetStateAction<{ value: string; label: string }[]>
+    >;
+  }) => {
     if (!validateDateRange({ from, to })) return;
+
     try {
-      const res = await fetch(API_ENDPOINTS.PAYERS, {
+      const res = await fetch(params.url, {
         method: "GET",
         headers: {
           "Content-Type": "application/json;charset=UTF-8",
         },
       });
-      if (!res.ok) throw new Error("Payer API failed");
+      if (!res.ok) throw new Error(params.errorMessage);
+
       const response = await res.json();
-      const mapped =
-        response?.data?.map((payer: any) => ({
-          value: payer.id,
-          label: payer.name,
-        })) ?? [];
-      setPayerOptions([{ value: "all", label: "All Payers" }, ...mapped]);
+      const mapped = response?.data?.map(params.mapItem) ?? [];
+
+      params.setOptions([
+        { value: "all", label: params.allOptionLabel },
+        ...mapped,
+      ]);
     } catch (error) {
-      console.error("Payer API error", error);
+      console.error(params.errorMessage, error);
     }
   };
 
+  const fetchPayers = async () => {
+    await fetchSelectOptions<{ id: string; name: string }>({
+      url: API_ENDPOINTS.PAYERS,
+      allOptionLabel: "All Payers",
+      errorMessage: "Payer API failed",
+      mapItem: (payer) => ({ value: payer.id, label: payer.name }),
+      setOptions: setPayerOptions,
+    });
+  };
+
   const fetchStatuses = async () => {
-    if (!validateDateRange({ from, to })) return;
-    try {
-      const res = await fetch(API_ENDPOINTS.TRANSACTION_STATUSES, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json;charset=UTF-8",
-        },
-      });
-      if (!res.ok) throw new Error("Status API failed");
-
-      const response = await res.json();
-
-      const mapped =
-        response?.data?.map((status: any) => ({
-          value: status.id,
-          label: status.name,
-        })) ?? [];
-
-      setStatusOptions([{ value: "all", label: "All Status" }, ...mapped]);
-    } catch (error) {
-      console.error("Status API error", error);
-    }
+    await fetchSelectOptions<{ id: string; name: string }>({
+      url: API_ENDPOINTS.TRANSACTION_STATUSES,
+      allOptionLabel: "All Status",
+      errorMessage: "Status API failed",
+      mapItem: (status) => ({ value: status.id, label: status.name }),
+      setOptions: setStatusOptions,
+    });
   };
 
   const getPayerIds = () => {
@@ -344,166 +450,81 @@ export const usePaymentLogic: any = () => {
     setEditedData([]);
   };
 
-  const blueTextRule = {
-    conditionalClassName: () => "text-[#0090FF]",
-  };
-
-  const handleColumnClick = async (row: any, api: any, type: string) => {
+  const handleColumnClick = async (
+    row: Transaction,
+    api: string,
+    type: string,
+  ) => {
     const transactionNo = row?.transactionNo;
-    setOpen(true);
-    setLoadingData(true);
-    if (type === "Remmitance") {
-      setDataModalColumns(REMITTANCE_COLUMNS);
-    } else if (type === "Bank Deposit") {
-      setDataModalColumns(BANK_DEPOSIT_COLUMNS);
-    } else if (type === "Emr Amount") {
-      setDataModalColumns(EMR_DETAILS_COLUMNS);
-    }
-    setModalData({
-      type,
-      row,
-      details: null,
-    });
+    const isEmr = type === "Emr Amount";
 
-    try {
-      const response = await fetch(`${api}?transactionNo=${transactionNo}`);
-      const data = await response.json();
-      setModalData({
-        type,
-        row,
-        details: data,
-      });
-    } catch (error) {
-      console.error("Failed to fetch bank deposit details", error);
+    if (isEmr) {
+      setEmrTableOpen(true);
+      setLoadingData(true);
+      setEmrTableData([]);
+      setSelectedEmrFileName(null);
+      setEmrFileDetailsOpen(false);
+    } else {
+      setOpen(true);
+      setLoadingData(true);
+      if (type === "Remmitance") {
+        setDataModalColumns(REMITTANCE_COLUMNS);
+      } else if (type === "Bank Deposit") {
+        setDataModalColumns(BANK_DEPOSIT_COLUMNS);
+      } else {
+        setDataModalColumns(EMR_DETAILS_COLUMNS);
+      }
       setModalData({
         type,
         row,
         details: null,
       });
+    }
+
+    try {
+      const response = await fetch(`${api}?transactionNo=${transactionNo}`);
+      const data = await response.json();
+
+      if (isEmr) {
+        const payload = Array.isArray(data?.data)
+          ? data.data
+          : Array.isArray(data)
+            ? data
+            : [];
+        setEmrTableData(
+          payload.map((item: EmrAmountRow, index: number) => ({
+            ...item,
+            __rowId: String(
+              item.fileId ?? item.fileName ?? item.visitId ?? index,
+            ).concat(`-${index}`),
+          })),
+        );
+      } else {
+        setModalData({
+          type,
+          row,
+          details: data,
+        });
+      }
+    } catch (error) {
+      console.error("Failed to fetch bank deposit details", error);
+      if (isEmr) {
+        setEmrTableData([]);
+      } else {
+        setModalData({
+          type,
+          row,
+          details: null,
+        });
+      }
     } finally {
       setLoadingData(false);
     }
   };
 
-  const columnRules: Record<
-    string,
-    {
-      bodyClassName?: string;
-      conditionalClassName?: (value: unknown, row: Transaction) => string;
-      render?: (value: unknown, row: any) => React.ReactNode;
-      clickable?: boolean;
-      onClick?: (value: unknown, row: any) => void;
-    }
-  > = {
-    region: {
-      conditionalClassName: () => {
-        return "bg-white border-1 border-[#E5E5E5] px-2 py-1 rounded-[6px] inline-block mt-1";
-      },
-    },
-    statusName: {
-      render: (value: unknown) => {
-        if (typeof value !== "string") return "-";
-        const [primary, secondary] = value.split(",");
-        return (
-          <div className="flex flex-col items-center gap-1">
-            <span className="text-[#34A255] bg-green-100 px-2 py-[2px] rounded-[6px] text-xs">
-              {primary}
-            </span>
-            {secondary && (
-              <>
-                <hr className="w-[70%] border-t border-gray-300 my-1" />
-                <span className="text-[#E63435] text-xs">{secondary}</span>
-              </>
-            )}
-          </div>
-        );
-      },
-    },
-    amount: {
-      conditionalClassName: (value) => {
-        if (typeof value !== "number") return "";
-        return value < 0 ? "text-red-600" : "text-green-600";
-      },
-    },
-    Netsmart: {
-      conditionalClassName: (value) => {
-        if (typeof value !== "number") return "";
-        return value <= 0 ? "text-[#EC7723]" : "text-[#0A0A0A]";
-      },
-    },
-    transactionType: {
-      bodyClassName: "max-w-[100px]",
-      render: (value: unknown) => truncateWithTooltip(value, { limit: 4 }),
-    },
-    payer: {
-      bodyClassName: "max-w-[120px]",
-      render: (value: unknown) => truncateWithTooltip(value, { limit: 6 }),
-    },
-    remittance: {
-      conditionalClassName: (value) => {
-        if (typeof value !== "number") return "";
-        return value === 0 ? "text-[#EC7723]" : "text-[#0090FF]";
-      },
-      render: (value) =>
-        valueWithInfoIcon(value, { tooltipText: "View Remittance Details" }),
-      clickable: true,
-      onClick: (_value, row) => {
-        handleColumnClick(row, API_ENDPOINTS?.REMIT_DATA, "Remmitance");
-      },
-    },
-    bankDeposit: {
-      ...blueTextRule,
-      clickable: true,
-      render: (value) =>
-        valueWithInfoIcon(value, { tooltipText: "View BankDeposit Details" }),
-      onClick: (_value: any, row: any) => {
-        handleColumnClick(row, API_ENDPOINTS?.BAI_DATA, "Bank Deposit");
-      },
-    },
-    emrAmount: {
-      ...blueTextRule,
-      clickable: true,
-      render: (value) =>
-        valueWithInfoIcon(value, { tooltipText: "View EMR Details" }),
-      onClick: (_value: any, row: any) => {
-        handleColumnClick(row, API_ENDPOINTS?.EMR_DATA, "Emr Amount");
-      },
-    },
-    payVariance: {
-      conditionalClassName: () => {
-        return "text-[#E63435]";
-      },
-    },
-    depositDate: {
-      render: (value: unknown) => formatDate(value as string),
-    },
-    postVariance: {
-      conditionalClassName: () => {
-        return "text-[#E63435]";
-      },
-    },
-    email: {
-      bodyClassName: "text-blue-600",
-    },
-  };
-
-  const baseExcludeKeys: (keyof Transaction)[] = [
-    "id",
-    "nonReconciledDataId",
-    "statusId",
-    "region",
-    "history",
-    "userId",
-  ];
-
-  const amountFields: (keyof Transaction)[] = [
-    "bankDeposit",
-    "remittance",
-    "emrAmount",
-    "payVariance",
-    "postVariance",
-    "glAmount",
-  ];
+  const columnRules = getNonReconciledColumnRules({
+    handleColumnClick,
+  });
 
   const columns = useMemo(
     () =>
@@ -527,6 +548,10 @@ export const usePaymentLogic: any = () => {
       }),
     [tableData],
   );
+
+  const selectedEmrFileRows = selectedEmrFileName
+    ? emrTableData.filter((r) => r.fileName === selectedEmrFileName)
+    : [];
 
   return {
     toggle,
@@ -572,9 +597,17 @@ export const usePaymentLogic: any = () => {
     setComment,
     open,
     setOpen,
+    emrTableOpen,
+    setEmrTableOpen,
+    emrFileDetailsOpen,
+    setEmrFileDetailsOpen,
+    emrTableData,
+    openEmrFileDetails,
+    selectedEmrFileName,
     modalData,
     loadingData,
     edit_columns,
     dataModalColumns,
+    selectedEmrFileRows,
   };
 };

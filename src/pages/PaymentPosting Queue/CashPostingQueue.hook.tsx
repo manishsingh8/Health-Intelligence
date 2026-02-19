@@ -123,14 +123,28 @@ export const useCashPostingQueueLogic = () => {
     a.click();
     window.URL.revokeObjectURL(url);
   };
-  const handleColumnClick = (row: any, type: any) => {
+  const handleColumnClick = async (row: any, api: any, type: any) => {
+    const checkNo = row?.cheque;
     setOpen(true);
-    setLoadingData(false);
-    setModalData({
-      row,
-      type,
-      details: row,
-    });
+    setLoadingData(true);
+    try {
+      const response = await fetch(`${api}?checkNo=${checkNo}`);
+      const data = await response.json();
+      setModalData({
+        type,
+        row,
+        details: data,
+      });
+    } catch (error) {
+      console.error("Failed to fetch bank deposit details", error);
+      setModalData({
+        type,
+        row,
+        details: null,
+      });
+    } finally {
+      setLoadingData(false);
+    }
   };
   const blueTextRule = {
     conditionalClassName: () => "text-[#0090FF]",
@@ -159,7 +173,11 @@ export const useCashPostingQueueLogic = () => {
       render: (value) =>
         valueWithInfoIcon(value, { tooltipText: "View Check Details" }),
       onClick: (_value: any, row: any) => {
-        handleColumnClick(row, "Check");
+        handleColumnClick(
+          row,
+          API_ENDPOINTS?.CASH_POSTING_CHECK_DETAILS,
+          "Check",
+        );
       },
     },
   };
